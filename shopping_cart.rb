@@ -29,6 +29,12 @@ class Terminal
     product.unit_price * product.vol_count - product.vol_price
   end
 
+  def apply_bulk_discount(product)
+    discount = calculate_bulk_discount(product)
+    @current_total -= discount
+    puts "Applying bulk discount $#{format('%.2f', discount)}"
+  end
+
   def hit_bulk_vol?(product)
     num_products = @scanned_products[product.product_code]
     product.vol_count && (num_products % product.vol_count).zero?
@@ -38,9 +44,7 @@ class Terminal
     product = @products[product_code]
     @current_total += product.unit_price
     return unless hit_bulk_vol?(product)
-    discount = calculate_bulk_discount(product)
-    @current_total -= discount
-    puts "Applying bulk discount $#{format('%.2f', discount)}"
+    apply_bulk_discount(product)
   end
 
   def scan(product_code)
@@ -65,5 +69,5 @@ class Terminal
     puts 'Welcome New Customer!'
   end
 
-  private :calculate_bulk_discount, :hit_bulk_vol?, :add_to_total
+  private :calculate_bulk_discount, :apply_bulk_discount, :hit_bulk_vol?, :add_to_total
 end
